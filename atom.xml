@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://3677065.github.io/walter/</id>
     <title>Walter小站</title>
-    <updated>2020-08-29T20:14:51.809Z</updated>
+    <updated>2020-08-29T20:37:52.076Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://3677065.github.io/walter/"/>
     <link rel="self" href="https://3677065.github.io/walter/atom.xml"/>
@@ -101,7 +101,7 @@
 <hr>
 <p><strong>目前已知苹果还没支持该特性，并且06年已有人提出这个bug：</strong><br>
 https://bugs.swift.org/browse/SR-521<br>
-<img src="//tosv.byted.org/obj/tech/images/d1382d9c-30cd-4dfc-8b64-ec1c98688a35.png" alt="" loading="lazy"></p>
+<img src="//http://qfue372wx.hn-bkt.clouddn.com/d1382d9c-30cd-4dfc-8b64-ec1c98688a35.png" alt="" loading="lazy"></p>
 <p><strong>据测试，目前相关问题依然没有解决。故本人重新提交向swift了一个bug issue：</strong><br>
 https://bugs.swift.org/browse/SR-12872</p>
 ]]></content>
