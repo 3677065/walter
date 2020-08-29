@@ -2,25 +2,19 @@
   <head>
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>关于 | Walter小站</title>
+<title>Swift无用符号裁剪情况 | Walter小站</title>
 <link rel="shortcut icon" href="https://3677065.github.io/walter//favicon.ico?v=1598728578215">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://3677065.github.io/walter//styles/main.css">
-<link rel="alternate" type="application/atom+xml" title="关于 | Walter小站 - Atom Feed" href="https://3677065.github.io/walter//atom.xml">
+<link rel="alternate" type="application/atom+xml" title="Swift无用符号裁剪情况 | Walter小站 - Atom Feed" href="https://3677065.github.io/walter//atom.xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
 
 
-    <meta name="description" content="
-欢迎来到我的小站呀，很高兴遇见你！🤝
+    <meta name="description" content="前言：
+Swift作为一门编译性语言，在一些特性上的表现有点出乎我的预料。
 
-👨‍💻 博主是谁
-一个iOS开发者
-⛹ 兴趣爱好
-写代码
-📬 联系我呀
-QQ:2509845011
-..." />
+在swift工程内部，部分被Public或者Open修饰的的符号（主要是class），即使从没被调用，即使ld参数添加了-dead_strip，export sy..." />
     <meta name="keywords" content="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
     <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
@@ -71,38 +65,128 @@ QQ:2509845011
         <div class="post-detail">
           <article class="post">
             <h2 class="post-title">
-              关于
+              Swift无用符号裁剪情况
             </h2>
             <div class="post-info">
               <span>
-                2019-01-25
+                2020-08-30
               </span>
               <span>
-                1 min read
+                2 min read
               </span>
               
             </div>
             
             <div class="post-content-wrapper">
               <div class="post-content">
-                <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
+                <h3 id="前言">前言：</h3>
+<p><strong>Swift作为一门编译性语言，在一些特性上的表现有点出乎我的预料。</strong></p>
+<blockquote>
+<p>在swift工程内部，部分被Public或者Open修饰的的符号（主要是class），即使从没被调用，即使ld参数添加了-dead_strip，export symbols设置为空， 依然也不会被strip。</p>
 </blockquote>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<p>一个iOS开发者</p>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>写代码</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>QQ:2509845011</p>
+<h3 id="我把裁剪情况简单整理了一下">我把裁剪情况简单整理了一下：</h3>
+<h4 id="符号没有被调用时符号裁剪情况">符号没有被调用时符号裁剪情况:</h4>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>struct</th>
+<th>class</th>
+<th>enum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>裁剪</td>
+<td>保留</td>
+<td>裁剪</td>
+</tr>
+</tbody>
+</table>
+<h5 id="class">Class:</h5>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>class符号</th>
+<th>class内部变量符号</th>
+<th>class内部函数符号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>保留</td>
+<td>保留</td>
+<td>函数体才裁剪，函数名被保留</td>
+</tr>
+</tbody>
+</table>
+<h5 id="struct">Struct:</h5>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>Struct符号</th>
+<th>Struct内部变量符号</th>
+<th>Struct内部函数符号</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>裁剪</td>
+<td>保留</td>
+<td>函数体才裁剪，函数名被保留</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到，在没有掉调用的情况下，涉及Class相关的符号，基本不会被裁剪。</p>
+<hr>
+<p>目前已知苹果还没支持该特性，并且06年已有人提出这个bug：<br>
+https://bugs.swift.org/browse/SR-521</p>
+<p>据测试，目前相关问题依然没有解决。故本人重新提交向swfit了一个bug issue：<br>
+https://bugs.swift.org/browse/SR-12872</p>
 
               </div>
               <div class="toc-container">
                 <ul class="markdownIt-TOC">
 <li>
 <ul>
-<li><a href="#%E5%8D%9A%E4%B8%BB%E6%98%AF%E8%B0%81">👨‍💻 博主是谁</a></li>
-<li><a href="#%E5%85%B4%E8%B6%A3%E7%88%B1%E5%A5%BD">⛹ 兴趣爱好</a></li>
-<li><a href="#%E8%81%94%E7%B3%BB%E6%88%91%E5%91%80">📬 联系我呀</a></li>
+<li>
+<ul>
+<li><a href="#%E5%89%8D%E8%A8%80">前言：</a></li>
+<li><a href="#%E6%88%91%E6%8A%8A%E8%A3%81%E5%89%AA%E6%83%85%E5%86%B5%E7%AE%80%E5%8D%95%E6%95%B4%E7%90%86%E4%BA%86%E4%B8%80%E4%B8%8B">我把裁剪情况简单整理了一下：</a>
+<ul>
+<li><a href="#%E7%AC%A6%E5%8F%B7%E6%B2%A1%E6%9C%89%E8%A2%AB%E8%B0%83%E7%94%A8%E6%97%B6%E7%AC%A6%E5%8F%B7%E8%A3%81%E5%89%AA%E6%83%85%E5%86%B5">符号没有被调用时符号裁剪情况:</a>
+<ul>
+<li><a href="#class">Class:</a></li>
+<li><a href="#struct">Struct:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -112,6 +196,15 @@ QQ:2509845011
           </article>
         </div>
 
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://3677065.github.io/walter/post/asdfasd/">
+              <h3 class="post-title">
+                由TableView相关崩溃引起的关于Runloop的思考
+              </h3>
+            </a>
+          </div>
         
 
         

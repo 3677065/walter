@@ -1,117 +1,83 @@
-<?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom">
-    <id>https://3677065.github.io/walter/</id>
-    <title>Walter小站</title>
-    <updated>2020-08-29T19:16:41.184Z</updated>
-    <generator>https://github.com/jpmonette/feed</generator>
-    <link rel="alternate" href="https://3677065.github.io/walter/"/>
-    <link rel="self" href="https://3677065.github.io/walter/atom.xml"/>
-    <subtitle>搬砖的点滴</subtitle>
-    <logo>https://3677065.github.io/walter/images/avatar.png</logo>
-    <icon>https://3677065.github.io/walter/favicon.ico</icon>
-    <rights>All rights reserved 2020, Walter小站</rights>
-    <entry>
-        <title type="html"><![CDATA[Swift无用符号裁剪情况]]></title>
-        <id>https://3677065.github.io/walter/post/swift-wu-yong-fu-hao-cai-jian-qing-kuang/</id>
-        <link href="https://3677065.github.io/walter/post/swift-wu-yong-fu-hao-cai-jian-qing-kuang/">
-        </link>
-        <updated>2020-08-29T19:16:03.000Z</updated>
-        <content type="html"><![CDATA[<h3 id="前言">前言：</h3>
-<p><strong>Swift作为一门编译性语言，在一些特性上的表现有点出乎我的预料。</strong></p>
-<blockquote>
-<p>在swift工程内部，部分被Public或者Open修饰的的符号（主要是class），即使从没被调用，即使ld参数添加了-dead_strip，export symbols设置为空， 依然也不会被strip。</p>
-</blockquote>
-<h3 id="我把裁剪情况简单整理了一下">我把裁剪情况简单整理了一下：</h3>
-<h4 id="符号没有被调用时符号裁剪情况">符号没有被调用时符号裁剪情况:</h4>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>struct</th>
-<th>class</th>
-<th>enum</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>裁剪</td>
-<td>保留</td>
-<td>裁剪</td>
-</tr>
-</tbody>
-</table>
-<h5 id="class">Class:</h5>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>class符号</th>
-<th>class内部变量符号</th>
-<th>class内部函数符号</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>保留</td>
-<td>保留</td>
-<td>函数体才裁剪，函数名被保留</td>
-</tr>
-</tbody>
-</table>
-<h5 id="struct">Struct:</h5>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>Struct符号</th>
-<th>Struct内部变量符号</th>
-<th>Struct内部函数符号</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>裁剪</td>
-<td>保留</td>
-<td>函数体才裁剪，函数名被保留</td>
-</tr>
-</tbody>
-</table>
-<p>可以看到，在没有掉调用的情况下，涉及Class相关的符号，基本不会被裁剪。</p>
-<hr>
-<p>目前已知苹果还没支持该特性，并且06年已有人提出这个bug：<br>
-https://bugs.swift.org/browse/SR-521</p>
-<p>据测试，目前相关问题依然没有解决。故本人重新提交向swfit了一个bug issue：<br>
-https://bugs.swift.org/browse/SR-12872</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[由TableView相关崩溃引起的关于Runloop的思考]]></title>
-        <id>https://3677065.github.io/walter/post/asdfasd/</id>
-        <link href="https://3677065.github.io/walter/post/asdfasd/">
-        </link>
-        <updated>2020-08-29T17:49:31.000Z</updated>
-        <content type="html"><![CDATA[<h3 id="术语">术语：</h3>
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>由TableView相关崩溃引起的关于Runloop的思考 | Walter小站</title>
+<link rel="shortcut icon" href="https://3677065.github.io/walter//favicon.ico?v=1598728578215">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://3677065.github.io/walter//styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="由TableView相关崩溃引起的关于Runloop的思考 | Walter小站 - Atom Feed" href="https://3677065.github.io/walter//atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="术语：
+Runloop: Runloop是一个事件循环对象。一般来讲，一个线程一次只能执行一个任务，执行完成后线程就会退出。如果我们需要一个机制，让线程能随时处理事件但并不退出，处于这个函数内部 &quot;接受消息-&gt;等待-&gt;..." />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://3677065.github.io/walter/">
+  <img class="avatar" src="https://3677065.github.io/walter//images/avatar.png?v=1598728578215" alt="">
+  </a>
+  <h1 class="site-title">
+    Walter小站
+  </h1>
+  <p class="site-description">
+    搬砖的点滴
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              由TableView相关崩溃引起的关于Runloop的思考
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-08-30
+              </span>
+              <span>
+                9 min read
+              </span>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h3 id="术语">术语：</h3>
 <p><strong>Runloop</strong>: Runloop是一个事件循环对象。一般来讲，一个线程一次只能执行一个任务，执行完成后线程就会退出。如果我们需要一个机制，让线程能随时处理事件但并不退出，处于这个函数内部 &quot;接受消息-&gt;等待-&gt;处理&quot; 的循环中，直到这个循环结束（比如传入 quit 的消息），函数返回。</p>
 <p><strong>Tableview</strong>：iOS系统提供的列表视图，类似安卓的listView。</p>
 <p><strong>一次runloop</strong>：本文一次runloop的定义是指首次进入runloop（或者runloop重新被唤醒）直到当次runloop休眠</p>
@@ -342,6 +308,100 @@ __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort,
 <p>更多Runloop研究资料可参考：<br/><br>
 <a href="https://blog.ibireme.com/2015/05/18/runloop/">深入理解RunLoop</a><br/><br>
 <a href="https://github.com/apple/swift-corelibs-foundation/blob/cfd7974982b106e40853d4cdaf772afac38730a9/CoreFoundation/RunLoop.subproj/CFRunLoop.c">Apple runloop源码</a><br/></p>
-]]></content>
-    </entry>
-</feed>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#%E6%9C%AF%E8%AF%AD">术语：</a></li>
+<li><a href="#%E8%83%8C%E6%99%AF">背景:</a></li>
+<li><a href="#%E6%9C%AC%E6%96%87%E7%9B%AE%E6%A0%87">本文目标：</a></li>
+<li><a href="#%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83">个人思考：</a></li>
+<li><a href="#runloop%E6%BA%90%E7%A0%81%E7%B2%BE%E7%AE%80%E7%89%88">runloop源码精简版：</a></li>
+<li><a href="#%E9%97%AE%E9%A2%981">问题1：</a>
+<ul>
+<li><a href="#%E7%BB%93%E8%AE%BA">结论：</a></li>
+<li><a href="#demo%E8%AF%95%E9%AA%8C">demo试验：</a></li>
+</ul>
+</li>
+<li><a href="#%E9%97%AE%E9%A2%982">问题2：</a>
+<ul>
+<li><a href="#case1">case1:</a></li>
+</ul>
+</li>
+<li><a href="#%E9%97%AE%E9%A2%983">问题3：</a>
+<ul>
+<li><a href="#case1-2">case1：</a></li>
+</ul>
+</li>
+<li><a href="#case2">case2：</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://3677065.github.io/walter//atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
