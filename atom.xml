@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://3677065.github.io/walter/</id>
     <title>Walter小站</title>
-    <updated>2020-08-29T19:22:39.989Z</updated>
+    <updated>2020-08-29T19:28:40.127Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://3677065.github.io/walter/"/>
     <link rel="self" href="https://3677065.github.io/walter/atom.xml"/>
@@ -342,6 +342,23 @@ __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort,
 <p>更多Runloop研究资料可参考：<br/><br>
 <a href="https://blog.ibireme.com/2015/05/18/runloop/">深入理解RunLoop</a><br/><br>
 <a href="https://github.com/apple/swift-corelibs-foundation/blob/cfd7974982b106e40853d4cdaf772afac38730a9/CoreFoundation/RunLoop.subproj/CFRunLoop.c">Apple runloop源码</a><br/></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[关于]]></title>
+        <id>https://3677065.github.io/walter/post/about/</id>
+        <link href="https://3677065.github.io/walter/post/about/">
+        </link>
+        <updated>2019-01-25T11:09:48.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
+</blockquote>
+<h2 id="博主是谁">👨‍💻 博主是谁</h2>
+<p>一个iOS开发者</p>
+<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
+<p>写代码</p>
+<h2 id="联系我呀">📬 联系我呀</h2>
+<p>QQ:2509845011</p>
 ]]></content>
     </entry>
 </feed>
