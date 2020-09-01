@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://3677065.github.io/walter/</id>
     <title>Walter小站</title>
-    <updated>2020-08-29T20:52:42.478Z</updated>
+    <updated>2020-09-01T19:59:25.532Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://3677065.github.io/walter/"/>
     <link rel="self" href="https://3677065.github.io/walter/atom.xml"/>
@@ -10,6 +10,190 @@
     <logo>https://3677065.github.io/walter/images/avatar.png</logo>
     <icon>https://3677065.github.io/walter/favicon.ico</icon>
     <rights>All rights reserved 2020, Walter小站</rights>
+    <entry>
+        <title type="html"><![CDATA[浅谈Swift符号裁剪]]></title>
+        <id>https://3677065.github.io/walter/post/qian-tan-swift-fu-hao-cai-jian/</id>
+        <link href="https://3677065.github.io/walter/post/qian-tan-swift-fu-hao-cai-jian/">
+        </link>
+        <updated>2020-09-01T19:58:50.000Z</updated>
+        <content type="html"><![CDATA[<h3 id="背景">背景</h3>
+<p>总所周知，Objective-C是一门具有动态性的语言，在编译时，并不能决定真正调用哪个函数。而跟OC不一样，<br>
+swift是一门静态语言，并不具备OC的动态性，函数的实际调用在编译时已经被决定。因此OC的方法没有被调用，符号也会留在最终的二进制文件内，那么对于Swfit，没有调用的符号是表现呢？</p>
+<h3 id="符号裁剪情况">符号裁剪情况</h3>
+<p>下面表格分别统计了class和struct在没有被调用的情况下符号裁剪的情况。</p>
+<h4 id="class">Class:</h4>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>class符号</th>
+<th>class内部变量符号</th>
+<th>class内部函数（非final修饰）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+</tbody>
+</table>
+<h4 id="struct">Struct:</h4>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>Struct符号</th>
+<th>Struct内部变量符号</th>
+<th>Struct内部函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>裁剪</td>
+<td>裁剪</td>
+<td>裁剪</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enum">Enum:</h4>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>Struct符号</th>
+<th>Struct内部变量符号</th>
+<th>Struct内部函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>保留</td>
+<td>保留</td>
+<td>保留</td>
+</tr>
+<tr>
+<td>非public</td>
+<td>裁剪</td>
+<td>裁剪</td>
+<td>裁剪</td>
+</tr>
+</tbody>
+</table>
+<br>
+<p><strong>可以看到，struct和Enum如果没有被public修饰的话，链接器很好的完成了符号裁剪的工作。另一边，class的情况就让人有所不解，即使没有被public修饰，依然全部保留了没被调用的符号。</strong><br>
+<br><br>
+<br></p>
+<h4 id="public修饰符问题">public修饰符问题</h4>
+<p>在swift中，被public修饰的符号无一例外都没有享受到符号裁剪的福利（所有有关编译选项都尝试过，均无果，如有同学了解，望告知，不胜感激），我个人倾向为这是swift的一个已知但是没修复的bug。</p>
+<p>并且16年已有人提出这个bug。苹果相关开发者回复如下：<br>
+<img src="//tosv.byted.org/obj/tech/images/1598983476948_f864f5a0f6a83206733d53d61c948558" alt="" loading="lazy"></p>
+<p>当然了，目前尚未解决，故本人重新提交向swfit了一个bug issue： <a href="https://bugs.swift.org/browse/SR-12872">https://bugs.swift.org/browse/SR-12872</a></p>
+<h4 id="静态函数">静态函数</h4>
+<p>在swift中，class外声明的函数与class内static函数本质上没有任何区别。</p>
+<p><strong>举个例子</strong><br>
+<img src="//tosv.byted.org/obj/tech/images/1598987678234_c86699003ba8f66c71e9d1e3c4c4ef17.png" alt="" loading="lazy"></p>
+<p>如上图，分别分别声明了函数foo1、静态方法foo3，且并没有进行调用。使用swiftc -emit-sil -Onone（为方便展示，没开启优化）命令查看他们是如何定义:</p>
+<pre><code class="language-txt">// foo1()
+sil hidden @$s4main4foo1yyF : $@convention(thin) () -&gt; () {
+} // end sil function '$s4main4foo1yyF'
+
+
+// static MyTestClass.foo3()
+sil hidden @$s4main11MyTestClassC4foo3yyFZ : $@convention(method) (@thick MyTestClass.Type) -&gt; () {
+} // end sil function '$s4main11MyTestClassC4foo3yyFZ'
+</code></pre>
+<p>在sil中，除了以上声明代码块以外并没有找到其他地方包含关键字foo1和foo3，这也与我们的预期一致，foo1和foo3没有调用，函数会被裁剪。</p>
+<h4 id="对象方法">对象方法</h4>
+<p>现在尝试查看对应对象方法在sil的情况，声明如下：<br>
+<img src="//tosv.byted.org/obj/tech/images/1598987773023_df13c3cee729c028fb1b7f8e2cd484f1.png" alt="" loading="lazy"></p>
+<p>生成的sil代码块：</p>
+<pre><code class="language-txt">// MyTestClass.foo4()
+sil hidden @$s4main11MyTestClassC4foo4yyF : $@convention(method) (@guaranteed MyTestClass) -&gt; () {
+} // end sil function '$s4main11MyTestClassC4foo4yyF'
+
+
+sil_vtable MyTestClass {
+  #MyTestClass.foo4!1: (MyTestClass) -&gt; () -&gt; () : @$s4main11MyTestClassC4foo4yyF	// MyTestClass.foo4()
+  #MyTestClass.init!allocator.1: (MyTestClass.Type) -&gt; () -&gt; MyTestClass : @$s4main11MyTestClassCACycfC	// MyTestClass.__allocating_init()
+  #MyTestClass.deinit!deallocator.1: @$s4main11MyTestClassCfD	// MyTestClass.__deallocating_deinit
+}
+</code></pre>
+<h4 id="虚函数派发">虚函数派发</h4>
+<p>与foo4关键字相关的代码块有两处，分别是foo4的函数定义和MyTestClass的vtable。由此可见，对应方法即使没有被显式调用，在sil内部依然会被相应class的vtable所引用，因此，这也是对象函数即使没有被调用也不会被裁剪的原因！</p>
+<p>vtable是Swift实现多态的基础，类似于c++的虚函数表，每一个类都会维护一个函数表, 里面记录着类所有的函数, 子类的虚函数表会包括父类的虚函数表，一个子类新添加的函数, 都会被插入到这个数组的最后. 运行时会根据这一个表去决定实际要被调用的函数.</p>
+<figure data-type="image" tabindex="1"><img src="//tosv.byted.org/obj/tech/images/1598988436730_80494b5be625b81a82170768e912059d.png" alt="" loading="lazy"></figure>
+<p><em>这张表展示了 ParentClass 和 ChildClass 虚数表里 method1, method2, method3 在内存里的布局.</em></p>
+<p>当一个函数被调用时, 会经历下面的几个过程:</p>
+<ol>
+<li>读取对象 <code>0xB00</code> 的函数表.</li>
+<li>读取函数指针的索引. 在这里, <code>method2</code> 的索引是1(偏移量), 也就是 <code>0xB00 + 1</code>.</li>
+<li>跳到 <code>0x222</code> (函数指针指向 0x222)</li>
+</ol>
+<p>在此不作过多阐释，有兴趣的同学可查阅相关资料文档。</p>
+<h3 id="final修饰符">final修饰符</h3>
+<h4 id="final修饰符的几点使用原则">final修饰符的几点使用原则</h4>
+<ul>
+<li><code>final</code>修饰符只能修饰类，表明该类不能被其他类继承，也就是它没资格当父类。</li>
+<li><code>final</code>修饰符也可以修饰类中的属性、方法和下标，但前提是该类并没有被final修饰过。</li>
+<li><code>final</code>不能修饰结构体和枚举。</li>
+</ul>
+<br>
+<p>尝试使用final修饰对象函数。<br>
+<img src="//tosv.byted.org/obj/tech/images/1598989016340_6d804ca77d963b2e0e8d5467a2bcb588.png" alt="" loading="lazy"></p>
+<p>foo4在sil中的表现：</p>
+<pre><code class="language-txt">// MyTestClass.foo4()
+sil hidden @$s4main11MyTestClassC4foo4yyF : $@convention(method) (@guaranteed MyTestClass) -&gt; () {
+} // end sil function '$s4main11MyTestClassC4foo4yyF'
+
+sil_vtable MyTestClass {
+  #MyTestClass.init!allocator.1: (MyTestClass.Type) -&gt; () -&gt; MyTestClass : @$s4main11MyTestClassCACycfC	// MyTestClass.__allocating_init()
+  #MyTestClass.deinit!deallocator.1: @$s4main11MyTestClassCfD	// MyTestClass.__deallocating_deinit
+}
+</code></pre>
+<p>foo4已经不存在于vtable中，sil也没有引用函数foo4的地方，因此可以认为对象方法加上final关键字后与static修饰的函数表现是一致的。因此final关键字修饰的对象方法在没有被调用的情况下，能够被链接器裁减掉。</p>
+<h3 id="extension">extension</h3>
+<p>在此只考虑extension下的对象方法符号是否被裁剪问题，不讨论extension的其他特性。</p>
+<p>先上声明：</p>
+<figure data-type="image" tabindex="2"><img src="//tosv.byted.org/obj/tech/images/1598989405144_af9c0de65246c292288d3342d3326b3f.png" alt="" loading="lazy"></figure>
+<p>把foo4定义到MyTestClass的extension中.</p>
+<p>生成sil代码：</p>
+<pre><code class="language-txt">// MyTestClass.foo4()
+sil hidden @$s4main11MyTestClassC4foo4yyF : $@convention(method) (@guaranteed MyTestClass) -&gt; () {
+} // end sil function '$s4main11MyTestClassC4foo4yyF'
+
+sil_vtable MyTestClass {
+  #MyTestClass.init!allocator.1: (MyTestClass.Type) -&gt; () -&gt; MyTestClass : @$s4main11MyTestClassCACycfC	// MyTestClass.__allocating_init()
+  #MyTestClass.deinit!deallocator.1: @$s4main11MyTestClassCfD	// MyTestClass.__deallocating_deinit
+}
+</code></pre>
+<p>生成的sil代码与final修饰的完全一致。因此extension下的对象方法也能享受到裁剪的福利。</p>
+<h3 id="结论">结论：</h3>
+<ul>
+<li>被public修饰的符号一律不会被裁剪。</li>
+<li>struct和enum符号能够被裁剪。</li>
+<li>class外声明的函数与static修饰的函数能够被裁剪。</li>
+<li>class内被final修饰的函数由于没有被vtable引用，能被裁剪。</li>
+<li>extension下的函数由于不能被override，有没有被vtable引用，实际与静态函数无异，能被裁剪。</li>
+</ul>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Swift无用符号裁剪情况]]></title>
         <id>https://3677065.github.io/walter/post/swift-wu-yong-fu-hao-cai-jian-qing-kuang/</id>
