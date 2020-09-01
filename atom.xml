@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://3677065.github.io/walter/</id>
     <title>Walter小站</title>
-    <updated>2020-09-01T20:14:32.439Z</updated>
+    <updated>2020-09-01T20:15:06.365Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://3677065.github.io/walter/"/>
     <link rel="self" href="https://3677065.github.io/walter/atom.xml"/>
@@ -192,102 +192,6 @@ sil_vtable MyTestClass {
 <li>class内被final修饰的函数由于没有被vtable引用，能被裁剪。</li>
 <li>extension下的函数由于不能被override，有没有被vtable引用，实际与静态函数无异，能被裁剪。</li>
 </ul>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Swift无用符号裁剪情况]]></title>
-        <id>https://3677065.github.io/walter/post/swift-wu-yong-fu-hao-cai-jian-qing-kuang/</id>
-        <link href="https://3677065.github.io/walter/post/swift-wu-yong-fu-hao-cai-jian-qing-kuang/">
-        </link>
-        <updated>2020-08-29T19:16:03.000Z</updated>
-        <content type="html"><![CDATA[<h3 id="前言">前言：</h3>
-<p><strong>Swift作为一门编译性语言，在一些特性上的表现有点出乎我的预料。</strong></p>
-<blockquote>
-<p>在swift工程内部，部分被Public或者Open修饰的的符号（主要是class），即使从没被调用，即使ld参数添加了-dead_strip，export symbols设置为空， 依然也不会被strip。</p>
-</blockquote>
-<h3 id="我把裁剪情况简单整理了一下">我把裁剪情况简单整理了一下：</h3>
-<h4 id="符号没有被调用时符号裁剪情况">符号没有被调用时符号裁剪情况:</h4>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>struct</th>
-<th>class</th>
-<th>enum</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>裁剪</td>
-<td>保留</td>
-<td>裁剪</td>
-</tr>
-</tbody>
-</table>
-<h5 id="class">Class:</h5>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>class符号</th>
-<th>class内部变量符号</th>
-<th>class内部函数符号</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>保留</td>
-<td>保留</td>
-<td>函数体才裁剪，函数名被保留</td>
-</tr>
-</tbody>
-</table>
-<h5 id="struct">Struct:</h5>
-<table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th>Struct符号</th>
-<th>Struct内部变量符号</th>
-<th>Struct内部函数符号</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td>保留</td>
-<td>保留</td>
-<td>保留</td>
-</tr>
-<tr>
-<td>非public</td>
-<td>裁剪</td>
-<td>保留</td>
-<td>函数体才裁剪，函数名被保留</td>
-</tr>
-</tbody>
-</table>
-<p>可以看到，在没有掉调用的情况下，涉及Class相关的符号，基本不会被裁剪。</p>
-<hr>
-<p><strong>目前已知苹果还没支持该特性，并且06年已有人提出这个bug了：</strong><br>
-https://bugs.swift.org/browse/SR-521<br>
-<img src="https://3677065.github.io/walter//post-images/1598730944222.png?v=1598733467560" alt="" loading="lazy"></p>
-<p><strong>据测试，目前相关问题依然没有解决。故本人重新提交向swift了一个bug issue：</strong><br>
-https://bugs.swift.org/browse/SR-12872</p>
 ]]></content>
     </entry>
     <entry>
